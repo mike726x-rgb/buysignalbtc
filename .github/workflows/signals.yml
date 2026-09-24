@@ -2,7 +2,12 @@ name: crypto-signals
 on:
   schedule:
     - cron: "10 0 * * *"   # daily at 00:10 UTC
-  workflow_dispatch:        # lets you run it manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      test_alert:
+        description: "Send a test message to Telegram"
+        type: boolean
+        default: false
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -11,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python signal_bot.py
+      - run: python signal_bot.py ${{ inputs.test_alert && '--test-alert' || '' }}
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
